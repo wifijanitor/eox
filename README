@@ -1,0 +1,4 @@
+Script that uses Ciscos EOX API to search for devices that have an EOL or EOS notification.
+
+you must have access to the api console and the EOX API 
+
