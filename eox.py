@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 import credentials as creds
 from os.path import expanduser
+from pprint import pprint
 
 
 my_token = "no-token"
@@ -16,6 +17,7 @@ fpath = expanduser("~/Documents/")
 results = 'EOL_Search_' + \
     str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S')) + '.txt'
 final = os.path.join(fpath, results)
+eol = {'EOXRecord': []}
 
 
 class web():
@@ -84,17 +86,26 @@ def EOX():
     }
     if len(file) >= 6:
         with open(file, 'rt') as product:
-            for row in product:
+            for line in product:
+                row = line.rstrip()
                 response = requests.get(web.url + row,
                                         headers=headers,
                                         params=web.querystring
                                         )
+                f = response.json()
+                c = f['EOXRecord']
+                eol['EOXRecord'].extend(c)
     else:
         response = requests.get(web.url + pid,
                                 headers=headers,
                                 params=web.querystring
                                 )
-    eol = response.json()
+        f = response.json()
+        c = f['EOXRecord']
+        eol['EOXRecord'].extend(c)
+
+
+def writer():
     with open(final, 'w+') as f:
         for epid in eol['EOXRecord']:
             f.write(epid['EOLProductID'] + '\n' +
@@ -105,6 +116,7 @@ def main():
     parseOptions()
     get_token()
     EOX()
+    writer()
 
 
 if __name__ == '__main__':
