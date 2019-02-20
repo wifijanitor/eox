@@ -1,13 +1,12 @@
 #! /usr/bin/env python3
 
 import argparse
-import os
 import requests
 import sys
 from datetime import datetime
 import credentials as creds
 from os.path import expanduser
-from pprint import pprint
+from os.path import join
 
 
 my_token = "no-token"
@@ -16,11 +15,11 @@ file = None
 fpath = expanduser("~/Documents/")
 results = 'EOL_Search_' + \
     str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S')) + '.txt'
-final = os.path.join(fpath, results)
+final = join(fpath, results)
 eol = {'EOXRecord': []}
 
 
-class web():
+class web:
     '''
     Information on where calls are being made, and what informatio is needed
     '''
@@ -70,13 +69,14 @@ def parseOptions():
 
 
 def get_token():
-    global my_token
-    '''
-    Get access Token and store as a variable
-    '''
-    r = requests.post(web.auth_url, data=web.payload, headers=web.auth_headers)
-    d = r.json()
-    my_token = d['access_token']
+        global my_token
+        '''
+        Get access Token and store as a variable
+        '''
+        r = requests.post(web.auth_url, data=web.payload,
+                          headers=web.auth_headers)
+        d = r.json()
+        my_token = d['access_token']
 
 
 def EOX():
