@@ -1,25 +1,21 @@
 #! /usr/bin/env python3
 
-import requests
 import argparse
+import os
+import requests
 import sys
+from datetime import datetime
 import credentials as creds
-from pprint import pprint
-#import logging
-
-# initialize logging, otherwise you will not see anything from requests
-'''
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
-'''
+from os.path import expanduser
 
 
 my_token = "no-token"
 pid = None
 file = None
+fpath = expanduser("~/Documents/")
+results = 'EOL_Search_' + \
+    str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S')) + '.txt'
+final = os.path.join(fpath, results)
 
 
 class web():
@@ -36,11 +32,6 @@ class web():
     }
     url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
     querystring = {"responseencoding": "json"}
-    '''headers = {
-        'accept': "application/json",
-        'authorization': "Bearer " + my_token
-    }
-    '''
 
 
 def parseOptions():
@@ -84,7 +75,6 @@ def get_token():
     r = requests.post(web.auth_url, data=web.payload, headers=web.auth_headers)
     d = r.json()
     my_token = d['access_token']
-    return my_token
 
 
 def EOX():
@@ -92,14 +82,7 @@ def EOX():
         'accept': "application/json",
         'authorization': "Bearer " + my_token
     }
-    '''
-    try:
-        from http.client import HTTPConnection
-    except ImportError:
-        from httplib import HTTPConnection
-    HTTPConnection.debuglevel = 1
-    '''
-    if len(file) == 1:
+    if len(file) >= 6:
         with open(file, 'rt') as product:
             for row in product:
                 response = requests.get(web.url + row,
@@ -111,8 +94,11 @@ def EOX():
                                 headers=headers,
                                 params=web.querystring
                                 )
-    pprint(response.json())
-#    eol = response.json()
+    eol = response.json()
+    with open(final, 'w+') as f:
+        for epid in eol['EOXRecord']:
+            f.write(epid['EOLProductID'] + '\n' +
+                    epid['LinkToProductBulletinURL'] + '\n')
 
 
 def main():
