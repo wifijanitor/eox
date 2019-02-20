@@ -21,7 +21,7 @@ eol = {'EOXRecord': []}
 
 class web:
     '''
-    Information on where calls are being made, and what informatio is needed
+    Information on where calls are being made, and what information is needed
     '''
     auth_url = "https://cloudsso.cisco.com/as/token.oauth2"
     payload = {
