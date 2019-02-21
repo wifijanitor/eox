@@ -5,29 +5,24 @@ import cgi
 import credentials as creds
 
 
-
-pid = None
-eol = {'EOXRecord': []}
-
-
 def get_token():
-    global my_token
-    auth_url = "https://cloudsso.cisco.com/as/token.oauth2"
-    auth_payload = {
+    url = "https://cloudsso.cisco.com/as/token.oauth2"
+    payload = {
         'grant_type': 'client_credentials',
         'client_id': creds.client_id,
         'client_secret': creds.client_secret
     }
-    auth_headers = {
+    headers = {
         'content-type': "application/x-www-form-urlencoded"
     }
-    r = requests.post(auth_url, data=auth_payload, headers=auth_headers)
+    r = requests.post(url, data=payload, headers=headers)
     d = r.json()
     token = d['access_token']
-    return token
+    EOX(token)
 
 
 def EOX(token):
+    body = ""
     url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
     querystring = {"responseencoding": "json"}
     headers = {
@@ -39,18 +34,27 @@ def EOX(token):
                             params=web.querystring
                             )
     f = response.json()
-    c = f['EOXRecord']
-    eol['EOXRecord'].extend(c)
+    for i in f['EOXRecord']:
+        prod = epid['EOLProductID']
+        link = '<a href="' + \
+            epid['LinkToProductBulletinURL'] + '>' + \
+            epid['LinkToProductBulletinURL'] + '</a>'
+        eol[prod] = link
+    for k, v in eol.items():
+        body = body + k + '<br>' + v + '<br>'
+    send_mail(email, body)
 
 
-def send_mail(email):
+def send_mail(email, body):
     return requests.post(
         "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
         auth=("api", creds.mail),
-        data={"from": "EOX Report <mailgun@apps.wifijanitor.com>",
-              "to": [email, email],
+        data={"from": "EOX Report <stevrod@cdw.com>",
+              "to": [email],
               "subject": "Here is the requested EOL/EOS Information",
-              "text": "Testing some Mailgun awesomness!"})
+              "html": "<html>"  body
+              "</html>"}
+    )
 
 
 def front_page():
@@ -64,7 +68,7 @@ def front_page():
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    ,input type = 'text' checked name = 'pid'/>&nbsp:
+    <input type = 'text' checked name = 'pid'/>&nbsp:
     <p>
     <p>
     <input type='submit' />
@@ -119,9 +123,8 @@ if not form.getvalue('email'):
     email = form.getvalue('email').strip()
 else:
     email = form.getvalue('email').strip()
+    pid = form.getvalue('pid').strip()
     if email.split('@')[-1].lower() != 'cdw.com':
         bad_email(email)
     else:
         get_token()
-        eox(token)
-        send_mail(email)
