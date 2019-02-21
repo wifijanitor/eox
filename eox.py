@@ -8,8 +8,6 @@ import credentials as creds
 
 pid = None
 file = None
-eol = {'EOXRecord': []}
-result = {}
 
 
 def parseOptions():
@@ -88,24 +86,16 @@ def EOX(token):
                                 params=querystring
                                 )
         f = response.json()
-        c = f['EOXRecord']
-        eol['EOXRecord'].extend(c)
-    for epid in eol['EOXRecord']:
-        prod = epid['EOLProductID']
-        link = epid['LinkToProductBulletinURL']
-        result[prod] = link
-
-
-def output():
-    for key, value in result.items():
-        print(key, value)
+        for i in f['EOXRecord']:
+            prod = epid['EOLProductID']
+            link = epid['LinkToProductBulletinURL']
+            print(prod)
+            print(link)
 
 
 def main():
-
     parseOptions()
     get_token()
-    output()
 
 
 if __name__ == '__main__':
