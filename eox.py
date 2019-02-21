@@ -3,36 +3,13 @@
 import argparse
 import requests
 import sys
-from datetime import datetime
 import credentials as creds
-from os.path import expanduser
-from os.path import join
 
 
-my_token = "no-token"
 pid = None
 file = None
-fpath = expanduser("~/Documents/")
-results = 'EOL_Search_' + \
-    str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S')) + '.txt'
-final = join(fpath, results)
 eol = {'EOXRecord': []}
-
-
-class web:
-    '''
-    Information on where calls are being made, and what information is needed
-    '''
-    auth_url = "https://cloudsso.cisco.com/as/token.oauth2"
-    payload = {
-        'grant_type': 'client_credentials',
-        'client_id': creds.client_id,
-        'client_secret': creds.client_secret}
-    auth_headers = {
-        'content-type': "application/x-www-form-urlencoded"
-    }
-    url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
-    querystring = {"responseencoding": "json"}
+result = {}
 
 
 def parseOptions():
@@ -69,54 +46,66 @@ def parseOptions():
 
 
 def get_token():
-        global my_token
-        '''
-        Get access Token and store as a variable
-        '''
-        r = requests.post(web.auth_url, data=web.payload,
-                          headers=web.auth_headers)
-        d = r.json()
-        my_token = d['access_token']
+    '''
+    Get access Token and store as a variable
+    '''
+    auth_url = "https://cloudsso.cisco.com/as/token.oauth2"
+    auth_payload = {
+        'grant_type': 'client_credentials',
+        'client_id': creds.client_id,
+        'client_secret': creds.client_secret}
+    auth_headers = {
+        'content-type': "application/x-www-form-urlencoded"
+    }
+    r = requests.post(auth_url, data=auth_payload,
+                      headers=auth_headers)
+    d = r.json()
+    token = d['access_token']
+    EOX(token)
 
 
-def EOX():
+def EOX(token):
+    url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
+    querystring = {"responseencoding": "json"}
     headers = {
         'accept': "application/json",
-        'authorization': "Bearer " + my_token
+        'authorization': "Bearer " + token
     }
     if len(file) >= 6:
         with open(file, 'rt') as product:
             for line in product:
                 row = line.rstrip()
-                response = requests.get(web.url + row,
+                response = requests.get(url + row,
                                         headers=headers,
-                                        params=web.querystring
+                                        params=querystring
                                         )
                 f = response.json()
                 c = f['EOXRecord']
                 eol['EOXRecord'].extend(c)
     else:
-        response = requests.get(web.url + pid,
+        response = requests.get(url + pid,
                                 headers=headers,
-                                params=web.querystring
+                                params=querystring
                                 )
         f = response.json()
         c = f['EOXRecord']
         eol['EOXRecord'].extend(c)
+    for epid in eol['EOXRecord']:
+        prod = epid['EOLProductID']
+        link = epid['LinkToProductBulletinURL']
+        result[prod] = link
 
 
-def writer():
-    with open(final, 'w+') as f:
-        for epid in eol['EOXRecord']:
-            f.write(epid['EOLProductID'] + '\n' +
-                    epid['LinkToProductBulletinURL'] + '\n')
+def output():
+    for key, value in result.items():
+        print(key, value)
 
 
 def main():
+
     parseOptions()
     get_token()
-    EOX()
-    writer()
+    output()
 
 
 if __name__ == '__main__':
