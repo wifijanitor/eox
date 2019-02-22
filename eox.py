@@ -22,22 +22,23 @@ def get_token():
 
 
 def EOX(token):
+    eol = {}
     body = ""
     url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
     querystring = {"responseencoding": "json"}
     headers = {
         'accept': "application/json",
-        'authorization': "Bearer " + my_token
+        'authorization': "Bearer " + token
     }
-    response = requests.get(web.url + pid,
+    response = requests.get(url + pid,
                             headers=headers,
-                            params=web.querystring
+                            params=querystring
                             )
     f = response.json()
-    for i in f['EOXRecord']:
-        prod = epid['EOLProductID']
+    for epid in f['EOXRecord']:
+        prod = ['EOLProductID']
         link = '<a href="' + \
-            epid['LinkToProductBulletinURL'] + '>' + \
+            epid['LinkToProductBulletinURL'] + '">' + \
             epid['LinkToProductBulletinURL'] + '</a>'
         eol[prod] = link
     for k, v in eol.items():
@@ -52,7 +53,7 @@ def send_mail(email, body):
         data={"from": "EOX Report <stevrod@cdw.com>",
               "to": [email],
               "subject": "Here is the requested EOL/EOS Information",
-              "html": "<html>"  body
+              "html": "<html>" + body +
               "</html>"}
     )
 
@@ -77,12 +78,17 @@ def front_page():
 
 
 def bad_email(email):
+    print("Content-type: text/html")
+    print()
     print("""
     <html>
     <body>
     <form action='eox.py' METHOD='POST'>
     Email Address to send report too:
     <input type = 'text' checked name = 'email'/>&nbsp;
+    <br>
+    Comma seperated list of PID for EOL check:
+    <input type = 'text' checked name = 'pid'/>&nbsp:
     <p>
     <p>
     <input type='submit' />
@@ -91,10 +97,12 @@ def bad_email(email):
     If you have an issue, please email Steve.</h2>
     </form>
     </body>
-    < / html > """ % (email))
+    </html > """ % (email))
 
 
 def bad_pid():
+    print("Content-type: text/html")
+    print()
     print("""
     <html>
     <body>
@@ -116,14 +124,17 @@ def bad_pid():
 
 
 form = cgi.FieldStorage()
-if not form.getvalue('pid'):
-    bad_pid()
 if not form.getvalue('email'):
     front_page()
-    email = form.getvalue('email').strip()
+    email = form.getvalue('email')
+    pid = form.getvalue('pid')
+elif not form.getvalue('pid'):
+    bad_pid()
+    email = form.getvalue('email')
+    pid = form.getvalue('pid')
 else:
-    email = form.getvalue('email').strip()
-    pid = form.getvalue('pid').strip()
+    email = form.getvalue('email')
+    pid = form.getvalue('pid')
     if email.split('@')[-1].lower() != 'cdw.com':
         bad_email(email)
     else:
