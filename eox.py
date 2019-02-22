@@ -8,6 +8,7 @@ import credentials as creds
 
 pid = None
 file = None
+body = ""
 
 
 def parseOptions():
@@ -63,6 +64,8 @@ def get_token():
 
 
 def EOX(token):
+    eol = {}
+    global body
     url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
     querystring = {"responseencoding": "json"}
     headers = {
@@ -86,11 +89,27 @@ def EOX(token):
                                 params=querystring
                                 )
         f = response.json()
-        for i in f['EOXRecord']:
+        for epid in f['EOXRecord']:
             prod = epid['EOLProductID']
-            link = epid['LinkToProductBulletinURL']
-            print(prod)
-            print(link)
+            link = '<a href="' + \
+                epid['LinkToProductBulletinURL'] + '">' + \
+                epid['LinkToProductBulletinURL'] + '</a>'
+            eol[prod] = link
+    for k, v in eol.items():
+        body = body + k + '<br>' + v + '<br>'
+    send_mail(body)
+
+
+def send_mail(body):
+    return requests.post(
+        "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
+        auth=("api", creds.mail),
+        data={"from": "EOX Report <stevrod@cdw.com>",
+              "to": ["steve@wifijanitor.com"],
+              "subject": "Here is the requested EOL/EOS Information",
+              "html": "<html>" + body +
+              "</html>"}
+    )
 
 
 def main():
