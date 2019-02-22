@@ -100,15 +100,11 @@ def EOX(token):
             link = '<a href="' + \
                 epid['LinkToProductBulletinURL'] + '">' + \
                 epid['LinkToProductBulletinURL'] + '</a>'
-            eol[prod] = link
-    for k, v in eol.items():
-        body = body + k + '<br>' + v + '<br>'
+            body = body + prod + '<br>' + link + '<br>' + '<br>'
     send_mail(email, body)
 
 
 def send_mail(email, body):
-    print("sending mail")
-    print(email)
     return requests.post(
         "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
         auth=("api", creds.mail),
