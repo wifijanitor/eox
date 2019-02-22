@@ -67,7 +67,9 @@ def front_page():
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;
+    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
+    You can use a * as a wildcard if you are unsure of the PID.<br>
+    Be warned this will pull *ALL* matching data
     <p>
     <p>
     <input type='submit' />
@@ -86,7 +88,9 @@ def bad_email(email):
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;
+    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
+    You can use a * as a wildcard if you are unsure of the PID.<br>
+    Be warned this will pull *ALL* matching data
     <p>
     <p>
     <input type='submit' />
@@ -109,7 +113,9 @@ def bad_pid():
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;
+    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
+    You can use a * as a wildcard if you are unsure of the PID.<br>
+    Be warned this will pull *ALL* matching data
     <p>
     <p>
     <input type='submit' />
@@ -132,7 +138,9 @@ def output(email):
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;
+    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
+    You can use a * as a wildcard if you are unsure of the PID.<br>
+    Be warned this will pull *ALL* matching data
     <p>
     <p>
     <input type='submit' />
