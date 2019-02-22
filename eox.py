@@ -41,7 +41,7 @@ def EOX(token):
             epid['LinkToProductBulletinURL'] + '">' + \
             epid['LinkToProductBulletinURL'] + '</a>'
         body = body + prod + '<br>' + link + '<br>' + '<br>'
-    send_mail(email, body)
+    output(body)
 
 
 def send_mail(email, body):
@@ -115,6 +115,32 @@ def bad_pid():
     <input type='submit' />
     <p>
     Please provide at least one PID</h2>
+    </form>
+    </body>
+    </html>
+    """)
+
+
+def output(body):
+    print("Content-type: text/html")
+    print()
+    print("""
+    <html>
+    <body>
+    <form action='eox.py' METHOD='POST'>
+    Email Address to send report:
+    <input type = 'text' checked name = 'email'/>&nbsp;
+    <br>
+    Comma seperated list of PID for EOL check:
+    <input type = 'text' checked name = 'pid'/>&nbsp;
+    <p>
+    <p>
+    <input type='submit' />
+    <p>
+    <br><br>
+    <br>
+    Here is the requested EOL / EOS information <br>
+    """ + str(body) + """
     </form>
     </body>
     </html>
