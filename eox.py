@@ -108,7 +108,7 @@ def send_mail(email, body):
     return requests.post(
         "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
         auth=("api", creds.mail),
-        data={"from": "EOX Report <stevrod@cdw.com>",
+        data={"from": "Steve Rodriguez <steve@wifijanitor.com>",
               "to": [email],
               "subject": "Here is the requested EOL/EOS Information",
               "html": "<html>" + body +
