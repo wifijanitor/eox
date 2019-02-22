@@ -36,11 +36,11 @@ def EOX(token):
                             )
     f = response.json()
     for epid in f['EOXRecord']:
-        prod = ['EOLProductID']
-        link = '<a href="' + \
-            epid['LinkToProductBulletinURL'] + '">' + \
-            epid['LinkToProductBulletinURL'] + '</a>'
-        body = body + prod + '<br>' + link + '<br>' + '<br>'
+            prod = epid['EOLProductID']
+            link = '<a href="' + \
+                epid['LinkToProductBulletinURL'] + '">' + \
+                epid['LinkToProductBulletinURL'] + '</a>'
+            body = body + prod + '<br>' + link + '<br>' + '<br>'
     output(body)
 
 
