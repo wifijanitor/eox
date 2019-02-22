@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /bin/python
 
 import requests
 import cgi
@@ -58,7 +58,7 @@ def send_mail(email, body):
 
 def front_page():
     print("Content-type: text/html")
-    print()
+    print('')
     print("""
     <html>
     <body>
@@ -79,7 +79,7 @@ def front_page():
 
 def bad_email(email):
     print("Content-type: text/html")
-    print()
+    print('')
     print("""
     <html>
     <body>
@@ -104,7 +104,7 @@ def bad_email(email):
 
 def bad_pid():
     print("Content-type: text/html")
-    print()
+    print('')
     print("""
     <html>
     <body>
@@ -129,7 +129,7 @@ def bad_pid():
 
 def output(email):
     print("Content-type: text/html")
-    print()
+    print('')
     print("""
     <html>
     <body>
