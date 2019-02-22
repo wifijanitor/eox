@@ -40,9 +40,7 @@ def EOX(token):
         link = '<a href="' + \
             epid['LinkToProductBulletinURL'] + '">' + \
             epid['LinkToProductBulletinURL'] + '</a>'
-        eol[prod] = link
-    for k, v in eol.items():
-        body = body + k + '<br>' + v + '<br>'
+        body = body + prod + '<br>' + link + '<br>' + '<br>'
     send_mail(email, body)
 
 
@@ -51,7 +49,7 @@ def send_mail(email, body):
         "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
         auth=("api", creds.mail),
         data={"from": "EOX Report <stevrod@apps.wifijanitor.com>",
-              "to": [email],
+              "to": email,
               "subject": "Here is the requested EOL/EOS Information",
               "html": "<html>" + body +
               "</html>"}
