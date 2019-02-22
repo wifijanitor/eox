@@ -8,12 +8,13 @@ import credentials as creds
 
 pid = None
 file = None
-body = ""
+email = None
 
 
 def parseOptions():
     global file
     global pid
+    global email
     parser = argparse.ArgumentParser(
         prog='EOX Finder',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -36,12 +37,17 @@ def parseOptions():
     parser.add_argument('-v', '--version',
                         action='version',
                         version='%(prog)s 1.0')
+    parser.add_argument('-e', '--email',
+                        metavar='email',
+                        help="email we are sending report too",
+                        dest='email')
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
         sys.exit(1)
     args = parser.parse_args()
     file = str(args.File_Name)
     pid = str(args.Search)
+    email = str(args.email)
 
 
 def get_token():
@@ -65,7 +71,7 @@ def get_token():
 
 def EOX(token):
     eol = {}
-    global body
+    body = ""
     url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
     querystring = {"responseencoding": "json"}
     headers = {
@@ -97,15 +103,17 @@ def EOX(token):
             eol[prod] = link
     for k, v in eol.items():
         body = body + k + '<br>' + v + '<br>'
-    send_mail(body)
+    send_mail(email, body)
 
 
-def send_mail(body):
+def send_mail(email, body):
+    print("sending mail")
+    print(email)
     return requests.post(
         "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
         auth=("api", creds.mail),
         data={"from": "EOX Report <stevrod@cdw.com>",
-              "to": ["steve@wifijanitor.com"],
+              "to": [email],
               "subject": "Here is the requested EOL/EOS Information",
               "html": "<html>" + body +
               "</html>"}
