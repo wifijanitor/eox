@@ -36,19 +36,19 @@ def EOX(token):
                             )
     f = response.json()
     for epid in f['EOXRecord']:
-            prod = epid['EOLProductID']
-            link = '<a href="' + \
-                epid['LinkToProductBulletinURL'] + '">' + \
-                epid['LinkToProductBulletinURL'] + '</a>'
-            body = body + prod + '<br>' + link + '<br>' + '<br>'
-    output(body)
+        prod = epid['EOLProductID']
+        link = '<a href="' + \
+            epid['LinkToProductBulletinURL'] + '">' + \
+            epid['LinkToProductBulletinURL'] + '</a>'
+        body = body + prod + '<br>' + link + '<br>' + '<br>'
+    send_mail(email, body)
 
 
 def send_mail(email, body):
     return requests.post(
         "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
         auth=("api", creds.mail),
-        data={"from": "EOX Report <stevrod@apps.wifijanitor.com>",
+        data={"from": "Steve Rodriguez <steve@apps.wifijanitor.com>",
               "to": email,
               "subject": "Here is the requested EOL/EOS Information",
               "html": "<html>" + body +
@@ -121,7 +121,7 @@ def bad_pid():
     """)
 
 
-def output(body):
+def output(email):
     print("Content-type: text/html")
     print()
     print("""
@@ -138,13 +138,11 @@ def output(body):
     <input type='submit' />
     <p>
     <br><br>
-    <br>
-    Here is the requested EOL / EOS information <br>
-    """ + str(body) + """
+    Thank you, your report has been emailed to %s
     </form>
     </body>
     </html>
-    """)
+    """ % (email))
 
 
 form = cgi.FieldStorage()
@@ -163,3 +161,4 @@ else:
         bad_email(email)
     else:
         get_token()
+        output(email)
