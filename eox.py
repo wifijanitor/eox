@@ -69,7 +69,7 @@ def front_page():
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp:
+    <input type = 'text' checked name = 'pid'/>&nbsp;
     <p>
     <p>
     <input type='submit' />
@@ -88,7 +88,7 @@ def bad_email(email):
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp:
+    <input type = 'text' checked name = 'pid'/>&nbsp;
     <p>
     <p>
     <input type='submit' />
@@ -111,7 +111,7 @@ def bad_pid():
     <input type = 'text' checked name = 'email'/>&nbsp;
     <br>
     Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp:
+    <input type = 'text' checked name = 'pid'/>&nbsp;
     <p>
     <p>
     <input type='submit' />
