@@ -1,8 +1,22 @@
-#! /bin/python
+#! /usr/bin/env python3
 
 import requests
 import cgi
 import credentials as creds
+
+template = "<form action = 'eox.py' METHOD = 'POST'>\
+    Email Address to send report too: \
+    <input type = 'text' checked name = 'email'/> &nbsp\
+    <br> \
+    <br> \
+    Comma seperated list of PID for EOL check:\
+    <input type = 'text' checked name = 'pid'/> &nbsp\
+    <br>\
+    You can use a * as a wildcard if you are unsure of the PID. Be warned this will pull * ALL * matching data\
+    <p>\
+    <p>\
+    <input type = 'submit'/>"
+    
 
 
 def get_token():
@@ -23,7 +37,7 @@ def get_token():
 
 def EOX(token):
     eol = {}
-    body = ""
+    msg = ""
     url = "https://api.cisco.com/supporttools/eox/rest/5/EOXByProductID//"
     querystring = {"responseencoding": "json"}
     headers = {
@@ -40,18 +54,18 @@ def EOX(token):
         link = '<a href="' + \
             epid['LinkToProductBulletinURL'] + '">' + \
             epid['LinkToProductBulletinURL'] + '</a>'
-        body = body + prod + '<br>' + link + '<br>' + '<br>'
-    send_mail(email, body)
+        msg = msg + prod + '<br>' + link + '<br>' + '<br>'
+    send_mail(email, msg)
 
 
-def send_mail(email, body):
+def send_mail(email, msg):
     return requests.post(
         "https://api.mailgun.net/v3/apps.wifijanitor.com/messages",
         auth=("api", creds.mail),
         data={"from": "Steve Rodriguez <steve@apps.wifijanitor.com>",
               "to": email,
               "subject": "Here is the requested EOL/EOS Information",
-              "html": "<html>" + body +
+              "html": "<html>" + msg +
               "</html>"}
     )
 
@@ -62,17 +76,7 @@ def front_page():
     print("""
     <html>
     <body>
-    <form action='eox.py' METHOD='POST'>
-    Email Address to send report:
-    <input type = 'text' checked name = 'email'/>&nbsp;
-    <br>
-    Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
-    You can use a * as a wildcard if you are unsure of the PID.<br>
-    Be warned this will pull *ALL* matching data
-    <p>
-    <p>
-    <input type='submit' />
+    """ + template + """
     <p>
     """)
 
@@ -83,17 +87,7 @@ def bad_email(email):
     print("""
     <html>
     <body>
-    <form action='eox.py' METHOD='POST'>
-    Email Address to send report too:
-    <input type = 'text' checked name = 'email'/>&nbsp;
-    <br>
-    Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
-    You can use a * as a wildcard if you are unsure of the PID.<br>
-    Be warned this will pull *ALL* matching data
-    <p>
-    <p>
-    <input type='submit' />
+    """ + template + """
     <p>
     The email %s is not a CDW email.
     If you have an issue, please email Steve.</h2>
@@ -108,17 +102,7 @@ def bad_pid():
     print("""
     <html>
     <body>
-    <form action='eox.py' METHOD='POST'>
-    Email Address to send report:
-    <input type = 'text' checked name = 'email'/>&nbsp;
-    <br>
-    Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
-    You can use a * as a wildcard if you are unsure of the PID.<br>
-    Be warned this will pull *ALL* matching data
-    <p>
-    <p>
-    <input type='submit' />
+    """ + template + """
     <p>
     Please provide at least one PID</h2>
     </form>
@@ -133,17 +117,7 @@ def output(email):
     print("""
     <html>
     <body>
-    <form action='eox.py' METHOD='POST'>
-    Email Address to send report:
-    <input type = 'text' checked name = 'email'/>&nbsp;
-    <br>
-    Comma seperated list of PID for EOL check:
-    <input type = 'text' checked name = 'pid'/>&nbsp;<br>
-    You can use a * as a wildcard if you are unsure of the PID.<br>
-    Be warned this will pull *ALL* matching data
-    <p>
-    <p>
-    <input type='submit' />
+    """ + template + """
     <p>
     <br><br>
     Thank you, your report has been emailed to %s
