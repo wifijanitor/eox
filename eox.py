@@ -139,9 +139,7 @@ elif not form.getvalue('pid'):
 else:
     email = form.getvalue('email')
     pid = form.getvalue('pid')
-    if email.split('@')[-1].lower() != 'cdw.com':
-        bad_email(email)
-    elif email.split('@')[-1].lower() != 'cdwg.com':
+    if 'cdw' in email.split('@')[-1].lower():
         bad_email(email)
     else:
         get_token()
